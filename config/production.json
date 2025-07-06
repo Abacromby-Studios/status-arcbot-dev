@@ -1,1 +1,20 @@
-
+{
+    "webhooks": {
+        "public": "https://discord.com/api/webhooks/1315562115406495774/XgXhMDDQFQDqOszWlotC_G3r8irXzBYJm-zHSXRZjgwT-lvLknYK2xRXEuelCOt_aSPz",
+        "internal": "https://discord.com/api/webhooks/1278188670259695698/Je_iIZ03-XUMZEiME8WQzM6XgisTODIlOhcBEBk3kr5_9C2kFIsSTP4XGJrEreHVmnmR"
+    },
+    "authentication": {
+        "adminUsername": "admin",
+        "adminPasswordHash": "$2b$10$24a94c22aaac40e3d87372393e6f73ffffb26be8891b735077c52fbe8371ac2c"
+    },
+    "monitoring": {
+        "interval": 300000,
+        "timeout": 10000,
+        "retentionDays": 30
+    },
+    "ports": {
+        "api": 3000,
+        "internal": 3001
+    }
+  }
+}
