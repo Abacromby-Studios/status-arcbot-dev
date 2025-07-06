@@ -14,10 +14,18 @@ const internalWebhook = new Webhook(config.webhooks.internal);
 // Paths
 const STATUS_FILE = path.join(__dirname, 'status.json');
 const INCIDENTS_FILE = path.join(__dirname, 'incidents.json');
+const UPTIME_HISTORY_FILE = path.join(__dirname, 'uptime-history.json');
 
 // Load or initialize data
 let statusData = loadData(STATUS_FILE, getDefaultStatus());
 let incidentsData = loadData(INCIDENTS_FILE, []);
+
+// Initialize uptime history
+let uptimeHistory = loadData(UPTIME_HISTORY_FILE, {
+    bot: initUptimeHistory(),
+    website: initUptimeHistory(),
+    database: initUptimeHistory()
+});
 
 function loadData(filePath, defaultValue) {
     try {
@@ -41,6 +49,11 @@ function getDefaultStatus() {
             bot: initUptimeStats(),
             website: initUptimeStats(),
             database: initUptimeStats()
+        },
+        minuteHistory: {
+            bot: [],
+            website: [],
+            database: []
         }
     };
 }
@@ -60,7 +73,16 @@ function initUptimeStats() {
         "24h": 100,
         "7d": 100,
         "30d": 100,
-        allTime: 100
+        allTime: 100,
+        lastUpdated: new Date().toISOString()
+    };
+}
+
+function initUptimeHistory() {
+    return {
+        minuteHistory: [],
+        currentMinuteStart: new Date(),
+        currentMinuteStatus: true
     };
 }
 
@@ -133,15 +155,55 @@ async function performChecks() {
 }
 
 function updateUptimeStats(service, isOperational) {
-    const stats = statusData.uptimeStats[service];
+    const now = new Date();
+    const history = uptimeHistory[service];
     
-    // Simplified calculation - in production you'd track minute-by-minute data
-    const adjustment = isOperational ? 0.01 : -0.05;
+    // Check if we're in a new minute
+    if (now.getMinutes() !== history.currentMinuteStart.getMinutes()) {
+        // Push the previous minute's status
+        history.minuteHistory.push(history.currentMinuteStatus);
+        
+        // Keep only the last 30 days of data (43,200 minutes)
+        if (history.minuteHistory.length > 43200) {
+            history.minuteHistory.shift();
+        }
+        
+        // Reset for new minute
+        history.currentMinuteStart = now;
+        history.currentMinuteStatus = isOperational;
+    } else {
+        // Update current minute's status (if it's false, keep it false)
+        history.currentMinuteStatus = history.currentMinuteStatus && isOperational;
+    }
     
-    stats["24h"] = Math.max(0, Math.min(100, stats["24h"] + adjustment));
-    stats["7d"] = Math.max(0, Math.min(100, stats["7d"] + (adjustment / 7)));
-    stats["30d"] = Math.max(0, Math.min(100, stats["30d"] + (adjustment / 30)));
-    stats["allTime"] = Math.max(0, Math.min(100, stats["allTime"] + (adjustment / 365)));
+    // Calculate uptime percentages
+    const allMinutes = [...history.minuteHistory, history.currentMinuteStatus];
+    const operationalMinutes = allMinutes.filter(status => status).length;
+    const totalMinutes = allMinutes.length;
+    
+    // Last 24 hours (1440 minutes)
+    const last24h = allMinutes.slice(-1440);
+    const operational24h = last24h.filter(status => status).length;
+    
+    // Last 7 days (10080 minutes)
+    const last7d = allMinutes.slice(-10080);
+    const operational7d = last7d.filter(status => status).length;
+    
+    // Last 30 days (43200 minutes)
+    const last30d = allMinutes.slice(-43200);
+    const operational30d = last30d.filter(status => status).length;
+    
+    // Update stats
+    statusData.uptimeStats[service] = {
+        "24h": totalMinutes > 0 ? (operational24h / 1440 * 100) : 100,
+        "7d": totalMinutes > 0 ? (operational7d / 10080 * 100) : 100,
+        "30d": totalMinutes > 0 ? (operational30d / 43200 * 100) : 100,
+        "allTime": totalMinutes > 0 ? (operationalMinutes / totalMinutes * 100) : 100,
+        "lastUpdated": now.toISOString()
+    };
+    
+    // Save history
+    saveData(UPTIME_HISTORY_FILE, uptimeHistory);
 }
 
 async function handleStatusChange(service, newStatus, details) {
