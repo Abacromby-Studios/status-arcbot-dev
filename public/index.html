@@ -1,1 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" class="dark-mode">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arc CAD Status Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons@latest/iconfont/tabler-icons.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/status.css">
+</head>
+<body>
+    <!-- Modern Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <a href="/" class="logo">
+                    <span class="logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="logo-text">Arc CAD</span>
+                    <span class="status-badge operational" id="global-status-badge">
+                        <i class="fas fa-circle"></i> Operational
+                    </span>
+                </a>
+            </div>
+            
+            <div class="navbar-menu">
+                <div class="navbar-links">
+                    <a href="/" class="nav-link active">
+                        <i class="ti ti-heartbeat"></i> Status
+                    </a>
+                    <a href="https://arcbot.dev" class="nav-link">
+                        <i class="ti ti-home"></i> Home
+                    </a>
+                    <a href="https://docs.arcbot.dev" class="nav-link">
+                        <i class="ti ti-book"></i> Documentation
+                    </a>
+                    <a href="/history" class="nav-link">
+                        <i class="ti ti-history"></i> Incident History
+                    </a>
+                </div>
+                
+                <div class="navbar-actions">
+                    <a href="https://discord.gg/YOUR_INVITE_CODE" class="nav-button">
+                        <i class="ti ti-brand-discord"></i> Support Server
+                    </a>
+                </div>
+            </div>
+            
+            <button class="navbar-toggle" id="mobile-toggle">
+                <i class="ti ti-menu-2"></i>
+            </button>
+        </div>
+    </nav>
 
+    <!-- Status Banner -->
+    <div class="status-banner" id="status-banner">
+        <div class="container">
+            <div class="banner-content">
+                <i class="ti ti-circle-check" id="banner-icon"></i>
+                <span id="banner-message">All systems operational</span>
+                <a href="/history" class="banner-link">View status history</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Summary Stats -->
+        <div class="summary-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="overall-uptime">99.98%</div>
+                <div class="stat-label">30-Day Uptime</div>
+                <div class="stat-trend up">
+                    <i class="ti ti-trending-up"></i> 0.02%
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value" id="last-incident">5 days</div>
+                <div class="stat-label">Since Last Incident</div>
+                <div class="stat-trend up">
+                    <i class="ti ti-trending-up"></i> 2 days
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value" id="avg-response">142ms</div>
+                <div class="stat-label">Avg Response Time</div>
+                <div class="stat-trend down">
+                    <i class="ti ti-trending-down"></i> 8ms
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Status -->
+        <section class="section">
+            <h2 class="section-title">
+                <i class="ti ti-server"></i> Service Status
+            </h2>
+            
+            <div class="status-grid">
+                <!-- Bot Status -->
+                <div class="status-card operational" id="bot-status">
+                    <div class="status-header">
+                        <div class="status-icon operational">
+                            <i class="ti ti-api"></i>
+                        </div>
+                        <h3>Arc CAD Bot</h3>
+                    </div>
+                    
+                    <div class="status-body">
+                        <div class="status-indicator operational">
+                            <span class="status-dot"></span>
+                            Operational
+                        </div>
+                        
+                        <div class="status-metrics">
+                            <div class="metric">
+                                <span class="metric-label">Response Time</span>
+                                <span class="metric-value" id="bot-response">86ms</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Uptime (30d)</span>
+                                <span class="metric-value" id="bot-uptime">99.99%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="status-details" id="bot-details">
+                            The bot is operating normally with stable performance.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Website Status -->
+                <div class="status-card operational" id="website-status">
+                    <div class="status-header">
+                        <div class="status-icon operational">
+                            <i class="ti ti-world"></i>
+                        </div>
+                        <h3>Arc CAD Website</h3>
+                    </div>
+                    
+                    <div class="status-body">
+                        <div class="status-indicator operational">
+                            <span class="status-dot"></span>
+                            Operational
+                        </div>
+                        
+                        <div class="status-metrics">
+                            <div class="metric">
+                                <span class="metric-label">Response Time</span>
+                                <span class="metric-value" id="website-response">112ms</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Uptime (30d)</span>
+                                <span class="metric-value" id="website-uptime">99.97%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="status-details" id="website-details">
+                            The website is fully operational with no known issues.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Database Status -->
+                <div class="status-card operational" id="database-status">
+                    <div class="status-header">
+                        <div class="status-icon operational">
+                            <i class="ti ti-database"></i>
+                        </div>
+                        <h3>MongoDB Database</h3>
+                    </div>
+                    
+                    <div class="status-body">
+                        <div class="status-indicator operational">
+                            <span class="status-dot"></span>
+                            Operational
+                        </div>
+                        
+                        <div class="status-metrics">
+                            <div class="metric">
+                                <span class="metric-label">Response Time</span>
+                                <span class="metric-value" id="database-response">24ms</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Uptime (30d)</span>
+                                <span class="metric-value" id="database-uptime">100%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="status-details" id="database-details">
+                            Database connections are stable with optimal performance.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Uptime History -->
+        <section class="section">
+            <h2 class="section-title">
+                <i class="ti ti-chart-line"></i> Uptime History
+            </h2>
+            
+            <div class="tabs">
+                <button class="tab active" data-tab="uptime">Uptime</button>
+                <button class="tab" data-tab="response">Response Time</button>
+                <button class="tab" data-tab="incidents">Incidents</button>
+            </div>
+            
+            <div class="tab-content active" id="uptime-tab">
+                <div class="chart-container">
+                    <canvas id="uptime-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="response-tab">
+                <div class="chart-container">
+                    <canvas id="response-chart"></canvas>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="incidents-tab">
+                <div class="incidents-list" id="incidents-list">
+                    <!-- Incidents will be loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="logo-text">Arc CAD Status</span>
+                </div>
+                
+                <div class="footer-links">
+                    <a href="https://arcbot.dev">Home</a>
+                    <a href="https://docs.arcbot.dev">Documentation</a>
+                    <a href="/history">Incident History</a>
+                    <a href="https://status.arcbot.dev/rss">RSS Feed</a>
+                </div>
+                
+                <div class="footer-meta">
+                    <span id="last-updated">Last updated: Just now</span>
+                    <span>•</span>
+                    <span id="current-version">v2.0.0</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
+    <script src="assets/js/charts.js"></script>
+    <script src="assets/js/status.js" type="module"></script>
+</body>
+</html>
