@@ -1,1 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arc CAD - Internal Control Panel</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../public/assets/css/main.css">
+    <style>
+        .admin-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .admin-header {
+            margin-bottom: 2rem;
+        }
+        
+        .admin-card {
+            background: rgba(22, 22, 23, 0.7);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .status-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .service-control {
+            padding: 1.5rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .control-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+        
+        .form-group select, 
+        .form-group textarea {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: inherit;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .incident-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .incident-item {
+            padding: 1rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--status-color, #666);
+        }
+        
+        .incident-item.outage {
+            border-left-color: var(--danger);
+            background: rgba(231, 76, 60, 0.08);
+        }
+        
+        .incident-item.maintenance {
+            border-left-color: var(--info);
+            background: rgba(52, 152, 219, 0.08);
+        }
+        
+        .incident-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .incident-title {
+            font-weight: 600;
+            color: var(--status-color, var(--text));
+        }
+        
+        .incident-title.outage {
+            color: var(--danger);
+        }
+        
+        .incident-title.maintenance {
+            color: var(--info);
+        }
+        
+        .incident-time {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+        
+        .incident-details {
+            margin-top: 0.5rem;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="navbar-brand">
+                <a href="/" class="logo">
+                    <span class="logo-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="logo-text">Arc CAD</span>
+                    <span class="status-badge">Admin</span>
+                </a>
+            </div>
+            
+            <div class="navbar-menu">
+                <div class="navbar-links">
+                    <a href="/internalcp" class="nav-link active">
+                        <i class="fas fa-cogs"></i> Control Panel
+                    </a>
+                    <a href="/internalcp/status" class="nav-link">
+                        <i class="fas fa-heartbeat"></i> Status Overview
+                    </a>
+                    <a href="/internalcp/incidents" class="nav-link">
+                        <i class="fas fa-exclamation-triangle"></i> Incidents
+                    </a>
+                    <a href="/internalcp/settings" class="nav-link">
+                        <i class="fas fa-sliders-h"></i> Settings
+                    </a>
+                </div>
+                
+                <div class="navbar-actions">
+                    <a href="/" class="nav-button">
+                        <i class="fas fa-external-link-alt"></i> Public Status
+                    </a>
+                    <button class="nav-button admin" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+            
+            <button class="navbar-toggle" id="mobile-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
 
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Service Status Control</h1>
+            <p>Manually update service statuses and manage incidents</p>
+        </div>
+        
+        <div class="admin-card">
+            <h2><i class="fas fa-sliders"></i> Status Controls</h2>
+            <div class="status-controls">
+                <div class="service-control">
+                    <h3>Arc CAD Bot</h3>
+                    <div class="current-status">
+                        <span class="status-badge operational">Operational</span>
+                        <span class="status-time">Last updated: Just now</span>
+                    </div>
+                    
+                    <form class="control-form" id="bot-control">
+                        <div class="form-group">
+                            <label for="bot-status">Status</label>
+                            <select id="bot-status">
+                                <option value="operational">Operational</option>
+                                <option value="degraded">Degraded Performance</option>
+                                <option value="outage">Outage</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bot-message">Public Message</label>
+                            <textarea id="bot-message" placeholder="Describe the status change for public visibility..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="bot-details">Internal Details</label>
+                            <textarea id="bot-details" placeholder="Add technical details for internal use..."></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Status</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="service-control">
+                    <h3>Arc CAD Website</h3>
+                    <div class="current-status">
+                        <span class="status-badge operational">Operational</span>
+                        <span class="status-time">Last updated: Just now</span>
+                    </div>
+                    
+                    <form class="control-form" id="website-control">
+                        <div class="form-group">
+                            <label for="website-status">Status</label>
+                            <select id="website-status">
+                                <option value="operational">Operational</option>
+                                <option value="degraded">Degraded Performance</option>
+                                <option value="outage">Outage</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="website-message">Public Message</label>
+                            <textarea id="website-message" placeholder="Describe the status change for public visibility..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="website-details">Internal Details</label>
+                            <textarea id="website-details" placeholder="Add technical details for internal use..."></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Update Status</button>
+                            <button type="reset" class="btn btn-secondary">Reset</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="admin-card">
+            <h2><i class="fas fa-exclamation-triangle"></i> Recent Incidents</h2>
+            <div class="incident-list" id="incident-list">
+                <!-- Incidents will be loaded here -->
+                <div class="incident-item outage">
+                    <div class="incident-header">
+                        <div class="incident-title outage">Bot Outage</div>
+                        <div class="incident-time">Today at 14:32</div>
+                    </div>
+                    <div class="incident-details">
+                        Database connection failed due to network issues. Automatic failover initiated.
+                    </div>
+                </div>
+                
+                <div class="incident-item maintenance">
+                    <div class="incident-header">
+                        <div class="incident-title maintenance">Website Maintenance</div>
+                        <div class="incident-time">Yesterday at 03:00</div>
+                    </div>
+                    <div class="incident-details">
+                        Scheduled maintenance for database migration. Downtime was expected.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../public/assets/js/admin.js" type="module"></script>
+</body>
+</html>
